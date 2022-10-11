@@ -7,6 +7,10 @@ const schemas = {
 		password: Joi.string().trim().required(),
 		confirmPassword: Joi.ref("password"),
 	}),
+	signinPOST: Joi.object().keys({
+		email: Joi.string().trim().email().required(),
+		password: Joi.string().trim().required(),
+	}),
 };
 
 export { schemas };
