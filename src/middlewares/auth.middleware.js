@@ -3,7 +3,7 @@ import { STATUS_CODE } from "../enums/statusCode.js";
 import { TABLE } from "../enums/tables.js";
 import { schemas } from "../schemas/schemas.js";
 
-async function validadeSignupBody(req, res, next) {
+async function signupBodyValidation(req, res, next) {
 	const { error } = schemas.signupPOST.validate(req.body, {
 		abortEarly: false,
 	});
@@ -31,7 +31,7 @@ async function validadeSignupBody(req, res, next) {
 	next();
 }
 
-async function validadeSigninBody(req, res, next) {
+async function signinBodyValidation(req, res, next) {
 	const { error } = schemas.signinPOST.validate(req.body, {
 		abortEarly: false,
 	});
@@ -58,4 +58,4 @@ async function validadeSigninBody(req, res, next) {
 	next();
 }
 
-export { validadeSignupBody, validadeSigninBody };
+export { signupBodyValidation, signinBodyValidation };
