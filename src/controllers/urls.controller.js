@@ -62,4 +62,16 @@ async function redirectToURL(req, res) {
 	}
 }
 
-export { createShortenURL, getURLById, redirectToURL };
+async function deleteURLById(req, res) {
+	const { id } = req.params;
+
+	try {
+		await connection.query(`DELETE FROM ${TABLE.URLS} WHERE id = $1`, [id]);
+		return res.sendStatus(STATUS_CODE.NO_CONTENT);
+	} catch (error) {
+		console.error(error);
+		return res.sendStatus(STATUS_CODE.SERVER_ERROR);
+	}
+}
+
+export { createShortenURL, getURLById, redirectToURL, deleteURLById };

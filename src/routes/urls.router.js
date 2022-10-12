@@ -1,21 +1,26 @@
 import { Router } from "express";
 import {
 	createShortenURL,
+	deleteURLById,
 	getURLById,
 	redirectToURL,
 } from "../controllers/urls.controller.js";
 import { tokenValidation } from "../middlewares/token.validantion.js";
-import { urlBodyValidation } from "../middlewares/urls.middleware.js";
+import {
+	URLBodyValidation,
+	URLIdValidation,
+} from "../middlewares/urls.middleware.js";
 
 const urlsRouter = Router();
 
 urlsRouter.post(
 	"/urls/shorten",
 	tokenValidation,
-	urlBodyValidation,
+	URLBodyValidation,
 	createShortenURL
 );
 urlsRouter.get("/urls/:id", getURLById);
 urlsRouter.get("/urls/open/:shortUrl", redirectToURL);
+urlsRouter.delete("/urls/:id", tokenValidation, URLIdValidation, deleteURLById);
 
 export { urlsRouter };
