@@ -38,4 +38,28 @@ async function getURLById(req, res) {
 	}
 }
 
-export { createShortenURL, getURLById };
+async function redirectToURL(req, res) {
+	const { shortUrl } = req.params;
+
+	try {
+		const { rows: url } = await connection.query(
+			`SELECT url FROM ${TABLE.URLS} WHERE "shortUrl" = $1;`,
+			[shortUrl]
+		);
+		if (url.length === 0) {
+			return res.sendStatus(STATUS_CODE.NOT_FOUND);
+		}
+
+		await connection.query(
+			`UPDATE ${TABLE.URLS} SET "visitCount" = ("visitCount" + 1) WHERE "shortUrl" = $1;`,
+			[shortUrl]
+		);
+
+		return res.redirect(url[0].url);
+	} catch (error) {
+		console.error(error);
+		return res.sendStatus(STATUS_CODE.SERVER_ERROR);
+	}
+}
+
+export { createShortenURL, getURLById, redirectToURL };
