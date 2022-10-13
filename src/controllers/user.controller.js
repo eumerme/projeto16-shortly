@@ -6,19 +6,19 @@ async function getUserData(req, res) {
 	const { userId } = res.locals;
 	try {
 		const { rows: userData } = await connection.query(
-			`SELECT users.id
-                , users.name
-                , SUM(urls."visitCount") AS "visitCount"
+			`SELECT ${TABLE.USERS}.id
+                , ${TABLE.USERS}.name
+                , SUM(${TABLE.URLS}."visitCount") AS "visitCount"
                 , json_agg(json_build_object(
-                    'id', urls.id
-                    , 'shortUrl', urls."shortUrl"  
-                    , 'url', urls.url
-                    , 'visitCount', urls."visitCount"
+                    'id', ${TABLE.URLS}.id
+                    , 'shortUrl', ${TABLE.URLS}."shortUrl"  
+                    , 'url', ${TABLE.URLS}.url
+                    , 'visitCount', ${TABLE.URLS}."visitCount"
                 )) AS "shortenedUrls"
-            FROM users
-            JOIN urls ON users.id = urls."userId"
-            WHERE users.id = $1
-            GROUP BY users.id
+            FROM ${TABLE.USERS}
+            JOIN ${TABLE.URLS} ON ${TABLE.USERS}.id = ${TABLE.URLS}."userId"
+            WHERE ${TABLE.USERS}.id = $1
+            GROUP BY ${TABLE.USERS}.id
             ;`,
 			[userId]
 		);
@@ -32,4 +32,25 @@ async function getUserData(req, res) {
 	}
 }
 
-export { getUserData };
+async function getRanking(req, res) {
+	try {
+		const { rows: ranking } = await connection.query(
+			`SELECT ${TABLE.USERS}.id
+                , ${TABLE.USERS}.name
+                , COUNT(${TABLE.URLS}."visitCount") AS "linksCount"
+                , SUM(${TABLE.URLS}."visitCount") AS "visitCount"
+            FROM ${TABLE.USERS}
+            JOIN ${TABLE.URLS} ON ${TABLE.USERS}.id = ${TABLE.URLS}."userId"
+            GROUP BY ${TABLE.USERS}.id
+            ORDER BY "visitCount" DESC
+            LIMIT 10
+            ;`
+		);
+		return res.status(STATUS_CODE.OK).send(ranking);
+	} catch (error) {
+		console.error(error);
+		return res.sendStatus(STATUS_CODE.SERVER_ERROR);
+	}
+}
+
+export { getUserData, getRanking };
