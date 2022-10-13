@@ -1,3 +1,4 @@
+import dayjs from "dayjs";
 import { connection } from "../database/db.js";
 import { STATUS_CODE } from "../enums/statusCode.js";
 import { TABLE } from "../enums/tables.js";
@@ -15,6 +16,17 @@ async function tokenValidation(req, res, next) {
 		);
 		if (session.length === 0) {
 			return res.sendStatus(STATUS_CODE.UNAUTHORIZED);
+		}
+
+		const isExpired = dayjs().diff(session[0].createdAt, "day");
+		if (isExpired === 3) {
+			await connection.query(
+				`DELETE FROM ${TABLE.SESSIONS} WHERE token = $1;`,
+				[token]
+			);
+			return res
+				.status(STATUS_CODE.UNAUTHORIZED)
+				.send({ message: "Sessão expirada." });
 		}
 
 		res.locals.userId = session[0].userId;

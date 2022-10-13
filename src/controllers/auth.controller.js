@@ -1,5 +1,5 @@
 import bcrypt from "bcrypt";
-import { v4 as uuid } from "uuid";
+import { nanoid } from "nanoid";
 import { connection } from "../database/db.js";
 import { STATUS_CODE } from "../enums/statusCode.js";
 import { TABLE } from "../enums/tables.js";
@@ -27,7 +27,7 @@ async function signin(req, res) {
 
 	try {
 		if (validPassword) {
-			const token = uuid();
+			const token = nanoid();
 
 			await connection.query(
 				`INSERT INTO ${TABLE.SESSIONS} ("userId", token) VALUES ($1, $2);`,
