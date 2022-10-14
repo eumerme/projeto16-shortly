@@ -14,6 +14,12 @@ const schemas = {
 	urlPOST: Joi.object().keys({
 		url: Joi.string().trim().uri().required(),
 	}),
+	paramsId: Joi.object().keys({
+		id: Joi.number().positive().integer(),
+	}),
+	paramsShortUrl: Joi.object().keys({
+		shortUrl: Joi.string().trim().length(8).required(),
+	}),
 };
 
 export { schemas };

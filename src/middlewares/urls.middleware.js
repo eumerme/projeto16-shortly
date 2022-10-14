@@ -3,7 +3,7 @@ import { STATUS_CODE } from "../enums/statusCode.js";
 import { TABLE } from "../enums/tables.js";
 import { schemas } from "../schemas/schemas.js";
 
-async function URLBodyValidation(req, res, next) {
+async function urlBody(req, res, next) {
 	const { error } = schemas.urlPOST.validate(req.body);
 	if (error) {
 		const message = error.details.map((detail) => detail.message).join(",");
@@ -13,9 +13,32 @@ async function URLBodyValidation(req, res, next) {
 	next();
 }
 
-async function URLIdValidation(req, res, next) {
-	const { userId } = res.locals;
-	const { id } = req.params;
+async function paramsId(req, res, next) {
+	let { id } = req.params;
+	id = id.trim();
+
+	const { value, error } = schemas.paramsId.validate({ id });
+	if (error) {
+		const message = error.details.map((detail) => detail.message).join(",");
+		return res.status(STATUS_CODE.BAD_REQUEST).send({ message });
+	}
+	res.locals.id = value.id;
+
+	next();
+}
+
+async function paramsShortUrl(req, res, next) {
+	const { error } = schemas.paramsShortUrl.validate(req.params);
+	if (error) {
+		const message = error.details.map((detail) => detail.message).join(",");
+		return res.status(STATUS_CODE.UNPROCESSABLE_ENTITY).send({ message });
+	}
+
+	next();
+}
+
+async function urlId(req, res, next) {
+	const { userId, id } = res.locals;
 
 	try {
 		const { rows: url } = await connection.query(
@@ -41,4 +64,4 @@ async function URLIdValidation(req, res, next) {
 	next();
 }
 
-export { URLBodyValidation, URLIdValidation };
+export { urlBody, urlId, paramsId, paramsShortUrl };

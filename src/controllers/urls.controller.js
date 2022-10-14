@@ -21,7 +21,7 @@ async function createShortenURL(req, res) {
 }
 
 async function getURLById(req, res) {
-	const { id } = req.params;
+	const { id } = res.locals;
 
 	try {
 		const { rows: url } = await connection.query(
@@ -63,7 +63,7 @@ async function redirectToURL(req, res) {
 }
 
 async function deleteURLById(req, res) {
-	const { id } = req.params;
+	const { id } = res.locals;
 
 	try {
 		await connection.query(`DELETE FROM ${TABLE.URLS} WHERE id = $1`, [id]);
