@@ -1,5 +1,6 @@
 import bcrypt from "bcrypt";
-import { nanoid } from "nanoid";
+//import { nanoid } from "nanoid";
+import jwt from "jsonwebtoken";
 import { connection } from "../database/db.js";
 import { STATUS_CODE } from "../enums/statusCode.js";
 import { TABLE } from "../enums/tables.js";
@@ -24,10 +25,13 @@ async function signin(req, res) {
 	const { password } = req.body;
 	const { user } = res.locals;
 	const validPassword = bcrypt.compareSync(password, user.password);
+	const fiveHours = 18000;
 
 	try {
 		if (validPassword) {
-			const token = nanoid();
+			const token = jwt.sign({ userId: user.id }, process.env.TOKEN_SECRET, {
+				expiresIn: fiveHours,
+			});
 
 			await connection.query(
 				`INSERT INTO ${TABLE.SESSIONS} ("userId", token) VALUES ($1, $2);`,
