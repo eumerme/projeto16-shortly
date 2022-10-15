@@ -1,7 +1,6 @@
-import { connection } from "../database/db.js";
 import { STATUS_CODE } from "../enums/statusCode.js";
-import { TABLE } from "../enums/tables.js";
 import { nanoid } from "nanoid";
+import * as urlsRepository from "../repositories/urls.repository.js";
 
 async function createShortenUrl(req, res) {
 	const { userId } = res.locals;
@@ -9,10 +8,7 @@ async function createShortenUrl(req, res) {
 	const shortUrl = nanoid(8);
 
 	try {
-		await connection.query(
-			`INSERT INTO ${TABLE.URLS} ("userId", url, "shortUrl") VALUES ($1, $2, $3);`,
-			[userId, url, shortUrl]
-		);
+		await urlsRepository.insertUrlIntoUrls(userId, url, shortUrl);
 		return res.status(STATUS_CODE.CREATED).send({ shortUrl });
 	} catch (error) {
 		console.error(error);
@@ -24,10 +20,7 @@ async function getUrlById(req, res) {
 	const { id } = res.locals;
 
 	try {
-		const { rows: url } = await connection.query(
-			`SELECT id, "shortUrl", url FROM ${TABLE.URLS} WHERE id = $1;`,
-			[id]
-		);
+		const { rows: url } = await urlsRepository.selectUrlById(id);
 		if (url.length === 0) {
 			return res.sendStatus(STATUS_CODE.NOT_FOUND);
 		}
@@ -42,18 +35,12 @@ async function redirectToUrl(req, res) {
 	const { shortUrl } = req.params;
 
 	try {
-		const { rows: url } = await connection.query(
-			`SELECT url FROM ${TABLE.URLS} WHERE "shortUrl" = $1;`,
-			[shortUrl]
-		);
+		const { rows: url } = await urlsRepository.selectUrlByShortUrl(shortUrl);
 		if (url.length === 0) {
 			return res.sendStatus(STATUS_CODE.NOT_FOUND);
 		}
 
-		await connection.query(
-			`UPDATE ${TABLE.URLS} SET "visitCount" = ("visitCount" + 1) WHERE "shortUrl" = $1;`,
-			[shortUrl]
-		);
+		await urlsRepository.updateVisitCount(shortUrl);
 
 		return res.redirect(url[0].url);
 	} catch (error) {
@@ -66,7 +53,7 @@ async function deleteUrlById(req, res) {
 	const { id } = res.locals;
 
 	try {
-		await connection.query(`DELETE FROM ${TABLE.URLS} WHERE id = $1`, [id]);
+		await urlsRepository.deleteUrlFromUrls(id);
 		return res.sendStatus(STATUS_CODE.NO_CONTENT);
 	} catch (error) {
 		console.error(error);

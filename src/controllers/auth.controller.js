@@ -1,18 +1,14 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import { connection } from "../database/db.js";
 import { STATUS_CODE } from "../enums/statusCode.js";
-import { TABLE } from "../enums/tables.js";
+import * as authRepository from "../repositories/auth.repository.js";
 
 async function signup(req, res) {
 	const { name, email, password } = req.body;
 	const password_hash = bcrypt.hashSync(password, 10);
 
 	try {
-		await connection.query(
-			`INSERT INTO ${TABLE.USERS} (name, email, password) VALUES ($1, $2, $3);`,
-			[name, email, password_hash]
-		);
+		await authRepository.insertUserIntoUsers(name, email, password_hash);
 		return res.sendStatus(STATUS_CODE.CREATED);
 	} catch (error) {
 		console.error(error);
@@ -32,10 +28,13 @@ async function signin(req, res) {
 				expiresIn: fiveHours,
 			});
 
-			await connection.query(
-				`INSERT INTO ${TABLE.SESSIONS} ("userId", token) VALUES ($1, $2);`,
-				[user.id, token]
-			);
+			const { rows: sessionExists } =
+				await authRepository.selectUserFromSessions(user.id);
+			if (sessionExists.length !== 0) {
+				return res.sendStatus(STATUS_CODE.CONFLICT);
+			}
+
+			await authRepository.insertUserIntoSessions(user.id, token);
 			return res.status(STATUS_CODE.OK).send({ token });
 		} else {
 			return res.sendStatus(STATUS_CODE.UNAUTHORIZED);

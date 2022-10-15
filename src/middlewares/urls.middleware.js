@@ -1,6 +1,5 @@
-import { connection } from "../database/db.js";
 import { STATUS_CODE } from "../enums/statusCode.js";
-import { TABLE } from "../enums/tables.js";
+import * as urlsRepository from "../repositories/urls.repository.js";
 
 async function urlBodyValidation(req, res, next) {
 	const { url } = req.body;
@@ -20,17 +19,14 @@ async function urlIdValidation(req, res, next) {
 	const { userId, id } = res.locals;
 
 	try {
-		const { rows: url } = await connection.query(
-			`SELECT * FROM ${TABLE.URLS} WHERE id = $1`,
-			[id]
-		);
+		const { rows: url } = await urlsRepository.selectUrlById(id);
 		if (url.length === 0) {
 			return res.sendStatus(STATUS_CODE.NOT_FOUND);
 		}
 
-		const { rows: urlOwner } = await connection.query(
-			`SELECT * FROM ${TABLE.URLS} WHERE id = $1 AND "userId" = $2;`,
-			[id, userId]
+		const { rows: urlOwner } = await urlsRepository.selectUrlByIdandUserId(
+			id,
+			userId
 		);
 		if (urlOwner.length === 0) {
 			return res.sendStatus(STATUS_CODE.UNAUTHORIZED);
