@@ -1,13 +1,11 @@
 import { Router } from "express";
 import { signin, signup } from "../controllers/auth.controller.js";
-import {
-	signinBodyValidation,
-	signupBodyValidation,
-} from "../middlewares/auth.middleware.js";
+import { userValidation } from "../middlewares/auth.middleware.js";
+import { schemasValidation } from "../middlewares/schemas.validation.js";
 
 const authRouter = Router();
 
-authRouter.post("/signup", signupBodyValidation, signup);
-authRouter.post("/signin", signinBodyValidation, signin);
+authRouter.post("/signup", schemasValidation, userValidation, signup);
+authRouter.post("/signin", schemasValidation, userValidation, signin);
 
 export { authRouter };

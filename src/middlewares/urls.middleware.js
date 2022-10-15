@@ -1,43 +1,22 @@
 import { connection } from "../database/db.js";
 import { STATUS_CODE } from "../enums/statusCode.js";
 import { TABLE } from "../enums/tables.js";
-import { schemas } from "../schemas/schemas.js";
 
-async function urlBody(req, res, next) {
-	const { error } = schemas.urlPOST.validate(req.body);
-	if (error) {
-		const message = error.details.map((detail) => detail.message).join(",");
-		return res.status(STATUS_CODE.UNPROCESSABLE_ENTITY).send({ message });
+async function urlBodyValidation(req, res, next) {
+	const { url } = req.body;
+	const validUrl =
+		url.substring(0, 7) === "http://" || url.substring(0, 8) === "https://";
+
+	if (!validUrl) {
+		return res
+			.status(STATUS_CODE.UNPROCESSABLE_ENTITY)
+			.send({ message: `"url" must be a valid URL` });
 	}
 
 	next();
 }
 
-async function paramsId(req, res, next) {
-	let { id } = req.params;
-	id = id.trim();
-
-	const { value, error } = schemas.paramsId.validate({ id });
-	if (error) {
-		const message = error.details.map((detail) => detail.message).join(",");
-		return res.status(STATUS_CODE.BAD_REQUEST).send({ message });
-	}
-	res.locals.id = value.id;
-
-	next();
-}
-
-async function paramsShortUrl(req, res, next) {
-	const { error } = schemas.paramsShortUrl.validate(req.params);
-	if (error) {
-		const message = error.details.map((detail) => detail.message).join(",");
-		return res.status(STATUS_CODE.UNPROCESSABLE_ENTITY).send({ message });
-	}
-
-	next();
-}
-
-async function urlId(req, res, next) {
+async function urlIdValidation(req, res, next) {
 	const { userId, id } = res.locals;
 
 	try {
@@ -64,4 +43,4 @@ async function urlId(req, res, next) {
 	next();
 }
 
-export { urlBody, urlId, paramsId, paramsShortUrl };
+export { urlBodyValidation, urlIdValidation };

@@ -3,7 +3,7 @@ import { STATUS_CODE } from "../enums/statusCode.js";
 import { TABLE } from "../enums/tables.js";
 import { nanoid } from "nanoid";
 
-async function createShortenURL(req, res) {
+async function createShortenUrl(req, res) {
 	const { userId } = res.locals;
 	const { url } = req.body;
 	const shortUrl = nanoid(8);
@@ -20,7 +20,7 @@ async function createShortenURL(req, res) {
 	}
 }
 
-async function getURLById(req, res) {
+async function getUrlById(req, res) {
 	const { id } = res.locals;
 
 	try {
@@ -38,7 +38,7 @@ async function getURLById(req, res) {
 	}
 }
 
-async function redirectToURL(req, res) {
+async function redirectToUrl(req, res) {
 	const { shortUrl } = req.params;
 
 	try {
@@ -62,7 +62,7 @@ async function redirectToURL(req, res) {
 	}
 }
 
-async function deleteURLById(req, res) {
+async function deleteUrlById(req, res) {
 	const { id } = res.locals;
 
 	try {
@@ -74,4 +74,4 @@ async function deleteURLById(req, res) {
 	}
 }
 
-export { createShortenURL, getURLById, redirectToURL, deleteURLById };
+export { createShortenUrl, getUrlById, redirectToUrl, deleteUrlById };

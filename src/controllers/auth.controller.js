@@ -1,5 +1,4 @@
 import bcrypt from "bcrypt";
-//import { nanoid } from "nanoid";
 import jwt from "jsonwebtoken";
 import { connection } from "../database/db.js";
 import { STATUS_CODE } from "../enums/statusCode.js";
