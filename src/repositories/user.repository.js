@@ -5,7 +5,7 @@ async function selectUserData(userId) {
 	return connection.query(
 		`SELECT ${TABLE.USERS}.id
             , ${TABLE.USERS}.name
-            , SUM(${TABLE.URLS}."visitCount") AS "visitCount"
+            , COALESCE(SUM(${TABLE.URLS}."visitCount"), 0) AS "visitCount"
             , json_agg(json_build_object(
                 'id', ${TABLE.URLS}.id
                 , 'shortUrl', ${TABLE.URLS}."shortUrl"  
@@ -13,7 +13,7 @@ async function selectUserData(userId) {
                 , 'visitCount', ${TABLE.URLS}."visitCount"
             )) AS "shortenedUrls"
         FROM ${TABLE.USERS}
-        JOIN ${TABLE.URLS} ON ${TABLE.USERS}.id = ${TABLE.URLS}."userId"
+        LEFT JOIN ${TABLE.URLS} ON ${TABLE.USERS}.id = ${TABLE.URLS}."userId"
         WHERE ${TABLE.USERS}.id = $1
         GROUP BY ${TABLE.USERS}.id
         ;`,

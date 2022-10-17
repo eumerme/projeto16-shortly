@@ -31,7 +31,7 @@ async function signin(req, res) {
 			const { rows: sessionExists } =
 				await authRepository.selectUserFromSessions(user.id);
 			if (sessionExists.length !== 0) {
-				return res.sendStatus(STATUS_CODE.CONFLICT);
+				await authRepository.deleteUserFromSessions(token);
 			}
 
 			await authRepository.insertUserIntoSessions(user.id, token);
