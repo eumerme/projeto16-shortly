@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { getRanking, getUserData } from "../controllers/user.controller.js";
-import { tokenValidation } from "../middlewares/token.validantion.js";
+import { tokenValidation } from "../middlewares/token.validation.js";
 
 const userRouter = Router();
 

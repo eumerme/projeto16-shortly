@@ -1,6 +1,6 @@
 import { Router } from "express";
 import * as urlsController from "../controllers/urls.controller.js";
-import { tokenValidation } from "../middlewares/token.validantion.js";
+import { tokenValidation } from "../middlewares/token.validation.js";
 import * as urlsMiddleware from "../middlewares/urls.middleware.js";
 import { schemasValidation } from "../middlewares/schemas.validation.js";
 

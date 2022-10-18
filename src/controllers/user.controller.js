@@ -3,6 +3,7 @@ import * as userRepository from "../repositories/user.repository.js";
 
 async function getUserData(req, res) {
 	const { userId } = res.locals;
+
 	try {
 		const { rows: userData } = await userRepository.selectUserData(userId);
 
@@ -17,7 +18,6 @@ async function getUserData(req, res) {
 
 		return res.status(STATUS_CODE.OK).send(userData[0]);
 	} catch (error) {
-		console.error(error);
 		return res.sendStatus(STATUS_CODE.SERVER_ERROR);
 	}
 }
@@ -27,7 +27,6 @@ async function getRanking(req, res) {
 		const { rows: ranking } = await userRepository.listRanking();
 		return res.status(STATUS_CODE.OK).send(ranking);
 	} catch (error) {
-		console.error(error);
 		return res.sendStatus(STATUS_CODE.SERVER_ERROR);
 	}
 }

@@ -37,7 +37,7 @@ async function updateVisitCount(shortUrl) {
 }
 
 async function deleteUrlFromUrls(id) {
-	return connection.query(`DELETE FROM ${TABLE.URLS} WHERE id = $1`, [id]);
+	return connection.query(`DELETE FROM ${TABLE.URLS} WHERE id = $1;`, [id]);
 }
 
 export {

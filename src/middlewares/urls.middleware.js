@@ -32,7 +32,6 @@ async function urlIdValidation(req, res, next) {
 			return res.sendStatus(STATUS_CODE.UNAUTHORIZED);
 		}
 	} catch (error) {
-		console.error(error);
 		return res.sendStatus(STATUS_CODE.SERVER_ERROR);
 	}
 

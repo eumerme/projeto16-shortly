@@ -11,7 +11,6 @@ async function createShortenUrl(req, res) {
 		await urlsRepository.insertUrlIntoUrls(userId, url, shortUrl);
 		return res.status(STATUS_CODE.CREATED).send({ shortUrl });
 	} catch (error) {
-		console.error(error);
 		return res.sendStatus(STATUS_CODE.SERVER_ERROR);
 	}
 }
@@ -26,7 +25,6 @@ async function getUrlById(req, res) {
 		}
 		return res.status(STATUS_CODE.OK).send(url[0]);
 	} catch (error) {
-		console.error(error);
 		return res.sendStatus(STATUS_CODE.SERVER_ERROR);
 	}
 }
@@ -41,10 +39,8 @@ async function redirectToUrl(req, res) {
 		}
 
 		await urlsRepository.updateVisitCount(shortUrl);
-
 		return res.redirect(url[0].url);
 	} catch (error) {
-		console.error(error);
 		return res.sendStatus(STATUS_CODE.SERVER_ERROR);
 	}
 }
@@ -56,7 +52,6 @@ async function deleteUrlById(req, res) {
 		await urlsRepository.deleteUrlFromUrls(id);
 		return res.sendStatus(STATUS_CODE.NO_CONTENT);
 	} catch (error) {
-		console.error(error);
 		return res.sendStatus(STATUS_CODE.SERVER_ERROR);
 	}
 }

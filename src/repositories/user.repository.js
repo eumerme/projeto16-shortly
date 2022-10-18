@@ -15,8 +15,7 @@ async function selectUserData(userId) {
         FROM ${TABLE.USERS}
         LEFT JOIN ${TABLE.URLS} ON ${TABLE.USERS}.id = ${TABLE.URLS}."userId"
         WHERE ${TABLE.USERS}.id = $1
-        GROUP BY ${TABLE.USERS}.id
-        ;`,
+        GROUP BY ${TABLE.USERS}.id;`,
 		[userId]
 	);
 }
@@ -31,8 +30,7 @@ async function listRanking() {
         JOIN ${TABLE.URLS} ON ${TABLE.USERS}.id = ${TABLE.URLS}."userId"
         GROUP BY ${TABLE.USERS}.id
         ORDER BY "visitCount" DESC
-        LIMIT 10
-        ;`
+        LIMIT 10;`
 	);
 }
 

@@ -20,10 +20,10 @@ async function selectUserByEmail(email) {
 	]);
 }
 
-async function insertUserIntoUsers(name, email, password_hash) {
+async function insertUserIntoUsers(name, email, password) {
 	return connection.query(
 		`INSERT INTO ${TABLE.USERS} (name, email, password) VALUES ($1, $2, $3);`,
-		[name, email, password_hash]
+		[name, email, password]
 	);
 }
 

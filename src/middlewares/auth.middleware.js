@@ -3,6 +3,7 @@ import { selectUserByEmail } from "../repositories/auth.repository.js";
 
 async function userValidation(req, res, next) {
 	const { path } = req.route;
+
 	try {
 		const { rows: user } = await selectUserByEmail(req.body.email);
 
@@ -15,7 +16,6 @@ async function userValidation(req, res, next) {
 
 		res.locals.user = user[0];
 	} catch (error) {
-		console.error(error);
 		return res.sendStatus(STATUS_CODE.SERVER_ERROR);
 	}
 

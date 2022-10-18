@@ -11,7 +11,6 @@ async function signup(req, res) {
 		await authRepository.insertUserIntoUsers(name, email, password_hash);
 		return res.sendStatus(STATUS_CODE.CREATED);
 	} catch (error) {
-		console.error(error);
 		return res.sendStatus(STATUS_CODE.SERVER_ERROR);
 	}
 }
@@ -20,27 +19,27 @@ async function signin(req, res) {
 	const { password } = req.body;
 	const { user } = res.locals;
 	const validPassword = bcrypt.compareSync(password, user.password);
-	const fiveHours = 18000;
 
 	try {
-		if (validPassword) {
-			const token = jwt.sign({ userId: user.id }, process.env.TOKEN_SECRET, {
-				expiresIn: fiveHours,
-			});
-
-			const { rows: sessionExists } =
-				await authRepository.selectUserFromSessions(user.id);
-			if (sessionExists.length !== 0) {
-				await authRepository.deleteUserFromSessions(sessionExists[0].token);
-			}
-
-			await authRepository.insertUserIntoSessions(user.id, token);
-			return res.status(STATUS_CODE.OK).send({ token });
-		} else {
+		if (!validPassword) {
 			return res.sendStatus(STATUS_CODE.UNAUTHORIZED);
 		}
+
+		const fiveHours = 18000;
+		const token = jwt.sign({ userId: user.id }, process.env.TOKEN_SECRET, {
+			expiresIn: fiveHours,
+		});
+
+		const { rows: sessionExists } = await authRepository.selectUserFromSessions(
+			user.id
+		);
+		if (sessionExists.length !== 0) {
+			await authRepository.deleteUserFromSessions(sessionExists[0].token);
+		}
+
+		await authRepository.insertUserIntoSessions(user.id, token);
+		return res.status(STATUS_CODE.OK).send({ token });
 	} catch (error) {
-		console.error(error);
 		return res.sendStatus(STATUS_CODE.SERVER_ERROR);
 	}
 }
